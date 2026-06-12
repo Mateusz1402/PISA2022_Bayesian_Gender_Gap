@@ -1,19 +1,3 @@
-// =====================================================================
-// Model 1 - BASELINE (no gender predictor)
-//
-//   y_i ~ Normal(mu_i, sigma)
-//   mu_i = alpha + b_ESCS*ESCS_i + b_DISCLIM*DISCLIM_i + b_PERSEVAGR*PERSEVAGR_i
-//
-// Priors (weakly-informative, on the PISA point scale):
-//   alpha               ~ Normal(500, 50)
-//   b_ESCS, b_DISCLIM,
-//   b_PERSEVAGR         ~ Normal(0, 30)
-//   sigma               ~ Exponential(0.01)
-//
-// The generated quantities block produces:
-//   * log_lik : pointwise log-likelihood, required for WAIC / PSIS-LOO
-//   * y_rep   : posterior predictive replicates, for posterior predictive checks
-// =====================================================================
 data {
   int<lower=0> N;                 // number of students
   vector[N] y;                    // PISA mathematics score (point scale)
@@ -29,14 +13,12 @@ parameters {
   real<lower=0> sigma;            // residual standard deviation
 }
 model {
-  // ---- priors ----
   alpha       ~ normal(500, 50);
   b_ESCS      ~ normal(0, 30);
   b_DISCLIM   ~ normal(0, 30);
   b_PERSEVAGR ~ normal(0, 30);
   sigma       ~ exponential(0.01);
 
-  // ---- likelihood (vectorized) ----
   y ~ normal(alpha + b_ESCS * ESCS
                    + b_DISCLIM * DISCLIM
                    + b_PERSEVAGR * PERSEVAGR,
